@@ -42,18 +42,29 @@ def extract_body(article_page: BeautifulSoup):
         return "Body section not found"
 
 def extract_thumbnail(article_page: BeautifulSoup):
+    # First try the standard image article format
     image_section = article_page.find("div", class_="nhl-c-article__header-image")
-
-    img_tag = image_section.find("img")
-
-    if img_tag and img_tag.has_attr("src"):
-        return img_tag["src"]
     
-    source_tag = image_section.find("source")
-    if source_tag and source_tag.has_attr("srcset"):
-        first_candidate = source_tag["srcset"].split(",")[0].strip()
-        return first_candidate.split()[0]
+    if image_section:
+        # Try to find direct img tag
+        img_tag = image_section.find("img")
+        if img_tag and img_tag.has_attr("src"):
+            return img_tag["src"]
+        
+        # Try to find source tag with srcset
+        source_tag = image_section.find("source")
+        if source_tag and source_tag.has_attr("srcset"):
+            first_candidate = source_tag["srcset"].split(",")[0].strip()
+            return first_candidate.split()[0]
     
+    # If no standard image found, look for video poster image
+    video_poster = article_page.find("div", class_="vjs-poster")
+    if video_poster:
+        img_tag = video_poster.find("img")
+        if img_tag and img_tag.has_attr("src"):
+            return img_tag["src"]
+    
+    # If no image found, return None
     return None
 
 def save_article(title: str, link: str, desc: str, img_url: str):
