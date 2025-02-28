@@ -31,16 +31,17 @@ class Command(BaseCommand):
 
             article_details = scrape_article(page_response)
 
-            upload = save_article(
-                        title = article_details['title'],
-                        link= link,
-                        desc= article_details['description'],
-                        img_url= article_details['img_url']
-                    )
-            if upload:
-                added += 1
+            if article_details:
+                upload = save_article(
+                            title = article_details['title'],
+                            link= link,
+                            desc= article_details['description'],
+                            img_url= article_details['img_url']
+                        )
+                if upload:
+                    added += 1
 
-                self.stdout.write(self.style.SUCCESS(
-                    upload
-                ))
+                    self.stdout.write(self.style.SUCCESS(
+                        upload
+                    ))
         self.stdout.write(f'Added {added} article at {datetime.datetime.now()}')

@@ -18,7 +18,7 @@ def send_request(title: str, subtitle: str = "", body: str = ""):
         f"Title: {title}\n"
         f"Subtitle: {subtitle}\n"
         "Provide an engaging 200-character summary of the article for social media. "
-        "The summary should clearly explain the news or topic, and must not include extra placeholders or quotations."
+        "The summary should clearly explain the news or topic in an engaging way, and must not include extra placeholders or quotations."
     )
     
     try:

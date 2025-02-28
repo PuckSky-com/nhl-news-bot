@@ -25,6 +25,7 @@ def scrape_article(page_response: Response):
     img_url = extract_thumbnail(article_page)
     if not img_url:
         img_url = "https://project-images-bucket.s3.us-east-1.amazonaws.com/nhl-logo.png"
+        return None
 
     return {
         'title': title,
