@@ -27,6 +27,9 @@ def send_request(title: str, subtitle: str = "", body: str = ""):
         - MUST be EXACTLY 150-250 characters long
         - Focus only on the main news from the title and description
         - Use clear, straightforward language
+        - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
+        - ONLY use player names explicitly mentioned in the title or description
+        - DO NOT substitute or invent players, teams, or facts
         - DO NOT include puzzles, rules, questions, or unrelated content
         - DO NOT include any instructions or placeholders
         - DO NOT make up information not present in the title or description
