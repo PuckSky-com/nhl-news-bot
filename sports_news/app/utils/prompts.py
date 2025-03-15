@@ -27,7 +27,7 @@ def get_prompt(title: str, desc: str):
             "hashtags": ["#GameDay", "#NHL"]
         },
         "milestone": {
-            "keywords": ["record", "milestone", "historic", "career", "youngest", "oldest", "first"],
+            "keywords": ["record", "milestone", "historic", "career", "youngest", "oldest", "first", "1st"],
             "emojis": ["🎯", "🏅", "📊"],
             "hashtags": ["#NHLMilestone", "#HockeyHistory"]
         }
@@ -100,31 +100,32 @@ def get_prompt(title: str, desc: str):
     hashtag_str = " ".join(hashtags)
     
     # Create customized prompt
-    prompt = f"""
-    You are a sports news summarizer that creates brief, engaging summaries for hockey social media posts.
+    prompt = PromptTemplate.from_template(f"""
+        You are a sports news summarizer that creates brief, engaging summaries for hockey social media posts.
 
-    Title of article: {title}
-    Description: {desc}
-    Content category: {selected_category}
-    Required emoji: {emoji}
-    Required hashtags: {hashtag_str}
+        Title of article: {title}
+        Description: {desc}
+        Content category: {selected_category}
+        Required emoji: {emoji}
+        Required hashtags: {hashtag_str}
 
-    TASK:
-    Write ONE short summary of this hockey news article for social media.
-    - MUST be EXACTLY 150-250 characters long
-    - Focus only on the main news from the title and description
-    - Use clear, straightforward language 
-    - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
-    - ONLY use player names explicitly mentioned in the title or description
-    - Include the {emoji} emoji somewhere in your summary
-    - End your summary with the hashtags: {hashtag_str}
-    - DO NOT substitute or invent players, teams, or facts
-    - DO NOT include puzzles, rules, questions, or unrelated content
-    - DO NOT include any instructions or placeholders
-    - DO NOT make up information not present in the title or description
-    - ONLY output the final summary text with no prefix or explanation
+        TASK:
+        Write ONE short summary of this hockey news article for social media.
+        - MUST be EXACTLY 150-250 characters long
+        - Focus only on the main news from the title and description
+        - Use clear, straightforward language 
+        - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
+        - ONLY use player names explicitly mentioned in the title or description
+        - Include the {emoji} emoji somewhere in your summary
+        - End your summary with the hashtags: {hashtag_str}
+        - DO NOT substitute or invent players, teams, or facts
+        - DO NOT include puzzles, rules, questions, or unrelated content
+        - DO NOT include any instructions or placeholders
+        - DO NOT make up information not present in the title or description
+        - ONLY output the final summary text with no prefix or explanation
 
-    Your summary:
-    """
+        Your summary:
+        """
+    )
     
     return prompt

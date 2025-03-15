@@ -1,5 +1,5 @@
 from langchain_ollama.llms import OllamaLLM
-from utils.prompts import get_prompt
+from .prompts import get_prompt
 
 # Set the model name - using phi from your available models
 MODEL_NAME = "mistral"
