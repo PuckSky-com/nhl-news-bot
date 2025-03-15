@@ -1,6 +1,5 @@
-import os
 from langchain_ollama.llms import OllamaLLM
-from langchain.prompts import PromptTemplate
+from utils.prompts import get_prompt
 
 # Set the model name - using phi from your available models
 MODEL_NAME = "mistral"
@@ -15,30 +14,7 @@ def send_request(title: str, subtitle: str = "", body: str = ""):
     )
     
     # Define a much more specific prompt template
-    prompt = PromptTemplate.from_template(
-        """
-        You are a sports news summarizer that creates brief, engaging summaries for social media.
-
-        Title of article: {title}
-        Description: {subtitle}
-
-        TASK:
-        Write ONE short summary of this hockey news article for social media.
-        - MUST be EXACTLY 150-250 characters long
-        - Focus only on the main news from the title and description
-        - Use clear, straightforward language
-        - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
-        - ONLY use player names explicitly mentioned in the title or description
-        - DO NOT substitute or invent players, teams, or facts
-        - DO NOT include puzzles, rules, questions, or unrelated content
-        - DO NOT include any instructions or placeholders
-        - DO NOT make up information not present in the title or description
-        - DO NOT write anything about database models, SQL queries, or programming
-        - ONLY output the final summary text with no prefix or explanation
-
-        Your summary:
-        """
-    )
+    prompt = get_prompt(title, subtitle)
     
     try:
         # Use the modern pipe syntax
