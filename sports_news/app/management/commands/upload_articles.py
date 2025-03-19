@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from app.utils.bluesky_post import upload_content
-from app.models import Article
+from app.utils.llama import send_request
+from scrape.models import Article
 import datetime
 
 class Command(BaseCommand):
@@ -15,8 +16,10 @@ class Command(BaseCommand):
 
         for article in new_articles:
             try:
+                text = send_request(article.title, article.description)
+
                 upload_content(
-                    text=article.content,
+                    text=text if text else article.title,
                     title=article.title,
                     link=article.link,
                     description=article.description,
