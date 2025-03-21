@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from app.utils.bluesky_post import upload_content, is_youtube_url
+from django.db import transaction
 from app.utils.llama import send_request
 from news.models import Article
 from highlights.models import Video
@@ -10,29 +11,18 @@ class Command(BaseCommand):
     help = "Uploads new articles and videos from the database to Bluesky with external embed support"
 
     def handle(self, *args, **kwargs):
-        new_articles = list(Article.objects.filter(is_new=True))
-        new_videos = list(Video.objects.filter(is_new=True))
+        with transaction.atomic():
+            new_articles = list(Article.objects.filter(is_new=True).select_for_update())
+            new_videos = list(Video.objects.filter(is_new=True).select_for_update())
 
-        if not new_articles and not new_videos:
-            self.stdout.write(self.style.ERROR("No new articles or videos to upload."))
-            return
-
-        # Combine and alternate between articles and videos
-        combined_items = []
-        max_items = max(len(new_articles), len(new_videos))
-        
-        for i in range(max_items):
-            if i < len(new_articles):
-                combined_items.append(('article', new_articles[i]))
-            if i < len(new_videos):
-                combined_items.append(('video', new_videos[i]))
-        
-        # Process items in alternating order
-        for item_type, item in combined_items:
-            if item_type == 'article':
-                self.upload_article(item)
-            else:
-                self.upload_video(item)
+            # Mark items as processing to prevent duplicates
+            for article in new_articles:
+                article.is_new = False
+                article.save()
+                
+            for video in new_videos:
+                video.is_new = False
+                video.save()
 
     def upload_article(self, article: Article):
         """Uploads an article to Bluesky"""
@@ -67,8 +57,8 @@ class Command(BaseCommand):
                 text=text if text else video.title,  # Use generated text or fallback to title
                 title=video.title,
                 link=f"https://www.youtube.com/watch?v={video_id}",
-                description=video.description if hasattr(video, 'description') else "",
-                img_url=video.img_url  # Ensure thumbnail is displayed
+                description="",
+                img_url=video.img_url
             )
 
             video.is_new = False

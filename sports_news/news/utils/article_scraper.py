@@ -47,44 +47,56 @@ class ArticleScraper(ABC):
             print(f"Error fetching page content: {e}")
             return None
         
+    @staticmethod
+    def _normalize_url(url):
+        """Normalize URL to prevent duplicates from minor URL variations"""
+        # Remove trailing slashes
+        url = url.rstrip('/')
+        # Remove common tracking parameters
+        import re
+        url = re.sub(r'\?(utm_.*|fb_.*|source=.*|ref=.*)', '', url)
+        return url
+        
     def run(self):
-        """
-        Execute the main scraping workflow.
+        """Improved run method with transaction and better error handling"""
+        from django.db import transaction
         
-        This method orchestrates the scraping process:
-        1. Fetch the main page
-        2. Extract target links
-        3. Visit each link and scrape article content
-        4. Save new articles to the database
-        
-        Returns:
-            dict: Summary of scraping results with keys:
-                - count (int): Number of new articles saved
-                - titles (list): Titles of new articles saved
-        """
         main_page = self._req_page(self.url)
-        
+        if not main_page:
+            return {'count': 0, 'titles': []}
+            
         target_links = self.crawl_links(main_page)
         titles = []
         count = 0
 
         for link in target_links:
-            article_page = self._req_page(link)
-
-            article = self.scrape_page(article_page)
-            img = self.extract_thumbnail(article_page)
+            # Normalize the link to prevent duplicates from URL variations
+            normalized_link = self._normalize_url(link)
             
-            if article and img and not Article.objects.filter(link=link).exists():
-                Article.objects.create(
-                    title = article['title'],
-                    description = article['description'],
-                    link = link,
-                    img_url = img,
-                    is_new = True
-                )
-                titles.append(f"Uploaded: {article['title']}")
-                count += 1
+            # Use transactions to prevent race conditions
+            with transaction.atomic():
+                # Check again inside transaction to prevent race conditions
+                if Article.objects.filter(link=normalized_link).exists():
+                    continue
+                    
+                article_page = self._req_page(link)
+                if not article_page:
+                    continue
+
+                article = self.scrape_page(article_page)
+                img = self.extract_thumbnail(article_page)
                 
+                if article and img:
+                    Article.objects.create(
+                        title=article['title'],
+                        description=article['description'],
+                        link=normalized_link,
+                        img_url=img,
+                        is_new=True
+                    )
+                    titles.append(f"Uploaded: {article['title']}")
+                    count += 1
+                    
         return {
             'count': count,
             'titles': titles
