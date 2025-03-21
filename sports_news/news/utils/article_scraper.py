@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 import requests
-from scrape.models import Article
+from news.models import Article
 
-class BaseScraper(ABC):
+class ArticleScraper(ABC):
     """
     Abstract base class for web scrapers.
     Defines the common interface that all scrapers should implement.
@@ -26,7 +26,7 @@ class BaseScraper(ABC):
         self.url = url
 
     @staticmethod
-    def __req_page(url: str) -> BeautifulSoup:
+    def _req_page(url: str) -> BeautifulSoup:
         """
         Request a webpage and parse it with BeautifulSoup.
         
@@ -62,14 +62,14 @@ class BaseScraper(ABC):
                 - count (int): Number of new articles saved
                 - titles (list): Titles of new articles saved
         """
-        main_page = self.__req_page(self.url)
+        main_page = self._req_page(self.url)
         
         target_links = self.crawl_links(main_page)
         titles = []
         count = 0
 
         for link in target_links:
-            article_page = self.__req_page(link)
+            article_page = self._req_page(link)
 
             article = self.scrape_page(article_page)
             img = self.extract_thumbnail(article_page)

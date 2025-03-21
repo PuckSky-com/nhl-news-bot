@@ -1,3 +1,4 @@
+from atproto_client.models.app.bsky.embed.video import Main
 from atproto_client.models.app.bsky.embed.external import External, Main
 from dotenv import load_dotenv
 from atproto import Client, client_utils
@@ -74,70 +75,80 @@ def build_text(content: str, tags: list):
     
     return builder
 
+def is_youtube_url(url):
+    """
+    Checks if the given URL is a YouTube video and extracts the video ID.
+    
+    Args:
+        url (str): The URL to check.
+    
+    Returns:
+        str or None: Returns the YouTube video ID if it's a valid YouTube URL, otherwise None.
+    """
+    youtube_regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([\w-]+)"
+    match = re.search(youtube_regex, url)
+    return match.group(1) if match else None
+
 def upload_content(text: str, title: str, link: str, description: str = "", img_url: str = None):
     """
-    Uploads a post to Bluesky with an external embed.
+    Uploads a post to Bluesky with an external embed, supporting both articles and YouTube videos.
     
     :param text: The text content of the post.
-    :param title: The title for the embedded external content.
-    :param link: The URL of the external article.
+    :param title: The title for the embedded content.
+    :param link: The URL of the external content.
     :param description: Description for the external content.
-    :param img_url: The URL of the image to be used as a thumbnail.
+    :param img_url: The URL of the image to be used as a thumbnail (only for non-YouTube embeds).
     """
-    # Extract hashtags from the original text
     _, hashtags = extract_hashtags(text)
-    
-    # Build rich text with proper tag formatting
     text_builder = build_text(text, hashtags)
+    
+    # Check if it's a YouTube video
+    video_id = is_youtube_url(link)
 
-    blob = None
-    if img_url:
+    if video_id:
+        # For YouTube videos, generate a thumbnail URL
+        youtube_thumb_url = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+        
+        # Download the thumbnail
         try:
-            # Add headers to mimic a browser request
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-            response = requests.get(img_url, headers=headers, timeout=10)
-            
-            # Check if the request was successful and is an image
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            response = requests.get(youtube_thumb_url, headers=headers, timeout=10)
             if response.status_code == 200 and response.headers.get('Content-Type', '').startswith('image/'):
                 blob = client.upload_blob(response.content)
-            else:
-                print(f"Warning: Could not download image or not an image type: {response.headers.get('Content-Type')}")
         except Exception as e:
-            print(f"Error downloading image: {e}")
+            print(f"Error downloading YouTube thumbnail: {e}")
+            blob = None
+            
+        embed_external = External(
+            title=title,
+            description=description,
+            uri=f"https://www.youtube.com/watch?v={video_id}",
+            thumb=blob.blob if blob else None
+        )
+    else:
+        # Regular external embed with an optional image
+        blob = None
+        if img_url:
+            try:
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response = requests.get(img_url, headers=headers, timeout=10)
+                if response.status_code == 200 and response.headers.get('Content-Type', '').startswith('image/'):
+                    blob = client.upload_blob(response.content)
+            except Exception as e:
+                print(f"Error downloading image: {e}")
 
-    embed_external = External(
-        title=title,
-        description=description,
-        uri=link,
-        thumb=blob.blob if blob else None
-    )
+        embed_external = External(
+            title=title,
+            description=description,
+            uri=link,
+            thumb=blob.blob if blob else None
+        )
+
     embed = Main(external=embed_external)
-    
-    # Fix the deprecated dict method to use model_dump
+
     try:
-        # For newer versions of Pydantic (v2)
         embed_data = embed.model_dump(by_alias=True)
     except AttributeError:
-        # Fallback for older versions
         embed_data = embed.dict(by_alias=True)
-    
+
     client.send_post(text=text_builder, embed=embed_data)
-
-
-if __name__=='__main__':
-    post = "Check out this hockey game! #NHL #Sports #HockeyFans"
-    content, hashtags = extract_hashtags(post)
-
-    print(content)  # "Check out this hockey game! #NHL #Sports #HockeyFans"
-    print(hashtags)  # ['NHL', 'Sports', 'HockeyFans']
-    
-    # Test upload with the sample post
-    upload_content(
-        text=post,
-        title="Hockey Game Highlights",
-        link="https://media.d3.nhle.com/image/private/t_ratio16_9-size20/f_png/v1741960706/prd/e0zpd6uuvvxqaw4lwalz.png",
-        description="Exciting hockey game highlights",
-        img_url="https://media.d3.nhle.com/image/private/t_ratio16_9-size20/f_png/v1741960706/prd/e0zpd6uuvvxqaw4lwalz.png"  # Replace with actual image URL or remove
-    )
