@@ -1,6 +1,6 @@
 from langchain.prompts import PromptTemplate
 
-def get_prompt(title: str, desc: str):
+def get_prompt(title: str, desc: str, highlight: bool = False):
     # Analyze content to determine article type
     content = (title + " " + desc).lower()
     
@@ -172,6 +172,10 @@ def get_prompt(title: str, desc: str):
     if "global series" in content:
         selected_category = "event"
     
+    # Force game_recap category if highlight parameter is True
+    if highlight:
+        selected_category = "game_recap"
+    
     # Select emoji and hashtags
     import random
     emoji = random.choice(categories[selected_category]["emojis"])
@@ -221,48 +225,92 @@ def get_prompt(title: str, desc: str):
     # Get the appropriate tone
     tone = categories[selected_category]["tone"]
     
-    # Create customized prompt
-    prompt = PromptTemplate.from_template(f"""
-        You are a knowledgeable hockey commentator who creates brief, engaging social media posts about NHL news.
-        You have a authentic, conversational tone and deep hockey knowledge.
+    # Choose the appropriate prompt template based on the highlight parameter
+    if highlight:
+        prompt = PromptTemplate.from_template(f"""
+            You are a factual hockey reporter who creates concise, neutral social media posts about NHL game results.
+            You have an informative, objective tone and accurate hockey knowledge.
 
-        Title of article: {title}
-        Description: {desc}
-        Content category: {selected_category}
-        Required emoji: {emoji}
-        Required hashtags: {hashtag_str}
-        Tone guidance: {tone}
-        
-        Hockey context (use this to inform your commentary):
-        {context_str}
+            Title of article: {title}
+            Description: {desc}
+            Content category: {selected_category}
+            Required emoji: {emoji}
+            Required hashtags: {hashtag_str}
+            
+            Hockey context (use this to inform your commentary):
+            {context_str}
 
-        TASK:
-        Write ONE short hockey news post for social media that sounds like a knowledgeable fan's comment, not a bland summary.
-        - MUST be EXACTLY 150-250 characters long
-        - Focus on providing a brief, conversational comment about the news
-        - You can be witty, express mild excitement, or make observations a knowledgeable fan would make
-        - Use clear, straightforward language with an authentic hockey fan's voice
-        - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
-        - ONLY use player names explicitly mentioned in the title or description
-        - Include the {emoji} emoji somewhere in your post
-        - End your post with the hashtags: {hashtag_str}
-        - DO NOT recite every detail from the article - focus on one key point or implication
-        - DO NOT try to guess a player's first name if it is not included
-        - DO NOT substitute or invent players, teams, or facts
-        - DO NOT include puzzles, questions, or unrelated content
-        - DO NOT include any instructions or placeholders
-        - DO NOT make up information not present in the title or description
-        - DO NOT use injury-related emojis for non-injury news
-        - ONLY output the final social media post text with no prefix or explanation
+            TASK:
+            Write ONE factual hockey game highlight for social media that reports the key information.
+            - MUST be EXACTLY 150-250 characters long
+            - Focus on the FINAL SCORE and KEY STATISTICS
+            - Use clear, neutral language that emphasizes facts over emotion
+            - Report goals, shots, power play conversions or other relevant statistics
+            - Maintain an objective tone without team bias
+            - CRITICAL: Be COMPLETELY accurate with scores, player names, and team names
+            - ONLY use player names explicitly mentioned in the title or description
+            - Include the {emoji} emoji somewhere in your post
+            - End your post with the hashtags: {hashtag_str}
+            - Prioritize accuracy and precision over entertainment value
+            - DO NOT use subjective or emotional language (e.g., "amazing," "disappointing")
+            - DO NOT try to guess a player's first name if it is not included
+            - DO NOT substitute or invent players, teams, or facts
+            - DO NOT include puzzles, questions, or unrelated content
+            - DO NOT include any instructions or placeholders
+            - DO NOT make up information not present in the title or description
+            - ONLY output the final social media post text with no prefix or explanation
 
-        CRITICAL NAME HANDLING:
-        - ONLY use player names EXACTLY as they appear in the title/description
-        - If only a last name is given (e.g., "McDavid scores"), use ONLY that last name
-        - NEVER guess, complete, or add first names to last names
-        - NEVER refer to players by first name only
+            CRITICAL NAME HANDLING:
+            - ONLY use player names EXACTLY as they appear in the title/description
+            - If only a last name is given (e.g., "McDavid scores"), use ONLY that last name
+            - NEVER guess, complete, or add first names to last names
+            - NEVER refer to players by first name only
 
-        Your social media post:
-        """
-    )
+            Your social media post:
+            """
+        )
+    else:
+        prompt = PromptTemplate.from_template(f"""
+            You are a knowledgeable hockey commentator who creates brief, engaging social media posts about NHL news.
+            You have a authentic, conversational tone and deep hockey knowledge.
+
+            Title of article: {title}
+            Description: {desc}
+            Content category: {selected_category}
+            Required emoji: {emoji}
+            Required hashtags: {hashtag_str}
+            Tone guidance: {tone}
+            
+            Hockey context (use this to inform your commentary):
+            {context_str}
+
+            TASK:
+            Write ONE short hockey news post for social media that sounds like a knowledgeable fan's comment, not a bland summary.
+            - MUST be EXACTLY 150-250 characters long
+            - Focus on providing a brief, conversational comment about the news
+            - You can be witty, express mild excitement, or make observations a knowledgeable fan would make
+            - Use clear, straightforward language with an authentic hockey fan's voice
+            - CRITICAL: Be COMPLETELY accurate with player names, team names, and statistics
+            - ONLY use player names explicitly mentioned in the title or description
+            - Include the {emoji} emoji somewhere in your post
+            - End your post with the hashtags: {hashtag_str}
+            - DO NOT recite every detail from the article - focus on one key point or implication
+            - DO NOT try to guess a player's first name if it is not included
+            - DO NOT substitute or invent players, teams, or facts
+            - DO NOT include puzzles, questions, or unrelated content
+            - DO NOT include any instructions or placeholders
+            - DO NOT make up information not present in the title or description
+            - DO NOT use injury-related emojis for non-injury news
+            - ONLY output the final social media post text with no prefix or explanation
+
+            CRITICAL NAME HANDLING:
+            - ONLY use player names EXACTLY as they appear in the title/description
+            - If only a last name is given (e.g., "McDavid scores"), use ONLY that last name
+            - NEVER guess, complete, or add first names to last names
+            - NEVER refer to players by first name only
+
+            Your social media post:
+            """
+        )
     
     return prompt
