@@ -1,101 +1,162 @@
 # NHL News Scraper and Bluesky Uploader
 
 ## Overview
-This project automates the process of scraping NHL.com for news articles, saving them to a database, generating short summaries using an AI model, and posting them to Bluesky with embedded links and images.
 
-## Features
-- **Scrapes NHL News Articles**: Extracts article details such as title, description, and images from NHL.com
-- **Stores Articles in a Database**: Saves the scraped articles to prevent duplicate entries
-- **AI-Generated Summaries**: Uses a language model to create concise and engaging social media summaries
-- **Bluesky Integration**: Automatically posts new articles to Bluesky with an external embed, including a link and thumbnail
+A sophisticated Django-based web scraping and content distribution system that automates the collection of NHL news articles and Sportsnet YouTube game recaps, generates AI-powered summaries, and publishes them to Bluesky.
 
-## Project Structure
+## Key Features
 
-### Management Commands
+### Robust Web Scraping Architecture
+- **Abstract Scraper Design**: Implements an extensible `ArticleScraper` base class
+- **Flexible Scraping Strategy**: Supports multiple content sources with a consistent interface
+- **Error Handling**: Comprehensive error management and retry mechanisms
 
-1. **Scraping Command** (`scrape_articles`)
-   - Fetches NHL news page
-   - Extracts article links and metadata
-   - Saves new articles to the database
+### Content Sources
+- NHL.com news articles
+- Sportsnet YouTube game recaps
 
-2. **Bluesky Posting Command** (`upload_articles`)
-   - Retrieves newly scraped articles
-   - Posts them to Bluesky with an external embed
-   - Marks articles as uploaded or deletes them in case of failure
+### Advanced Scraping Capabilities
+- URL normalization to prevent duplicates
+- Intelligent link extraction
+- Thumbnail and metadata retrieval
+- Transactional database operations
 
-### Utility Modules
+### AI-Powered Content Enhancement
+- Uses Ollama with Mistral LLM for generating concise summaries
+- Supports context-aware summarization for articles and videos
 
-#### `scraper_utils.py`
-- Functions for parsing NHL.com's HTML structure using BeautifulSoup
-- Extracts titles, descriptions, article bodies, and images
-- Saves articles with AI-generated summaries
+### Bluesky Publishing
+- Automated content upload
+- Rich media embedding
+- Alternating publication of articles and videos
 
-#### `bluesky_post.py`
-- Handles posting articles to Bluesky
-- Uses the AT Protocol client for authentication and content uploads
-- Supports external embeds with links and thumbnails
+## Technical Architecture
 
-#### `llama.py`
-- Calls an AI model to generate short-form article summaries
-- Ensures clear and concise output for social media
+### Scraping Components
 
-## Environment Variables
-Set up a `.env` file with the following:
+#### ArticleScraper (Abstract Base Class)
+- Provides a standardized scraping workflow
+- Key Methods:
+  - `_req_page()`: Fetch and parse web pages
+  - `_normalize_url()`: Prevent duplicate content
+  - `run()`: Orchestrate entire scraping process
+- Abstract methods for subclasses to implement:
+  - `scrape_page()`
+  - `crawl_links()`
+  - `extract_thumbnail()`
+
+#### YouTubeScraper
+- YouTube Data API integration
+- Features:
+  - Sportsnet channel ID resolution
+  - Resilient API request handling
+  - Exponential backoff for rate limiting
+  - Full video description retrieval
+
+### Project Structure
+
 ```
-PDS_HOST=<Bluesky PDS host>
-USERNAME=<Bluesky account username>
-PASSWORD=<Bluesky account password>
-API_TOKEN=<API key for AI-generated summaries>
+sports_news/
+├── app/
+│   ├── management/commands/
+│   │   └── upload.py
+│   └── utils/
+│       ├── bluesky_post.py
+│       ├── llama.py
+│       └── prompts.py
+├── highlights/
+│   ├── management/commands/
+│   │   └── scrape_videos.py
+│   └── yt_scraper.py
+├── news/
+│   ├── management/commands/
+│   │   └── scrape_articles.py
+│   ├── utils/
+│   │   └── article_scraper.py
+│   └── nhl_scraper.py
+└── sports_news/
+    ├── settings.py
+    └── urls.py
 ```
 
-## Running the Scraper and Uploader
+## Management Commands
 
-1. **Scrape NHL articles:**
+### Scrape NHL Articles
 ```bash
 python manage.py scrape_articles
 ```
+- Fetches latest NHL news articles
+- Extracts comprehensive article metadata
+- Saves unique articles to database
 
-2. **Upload new articles to Bluesky:**
+### Scrape Sportsnet YouTube Game Recaps
 ```bash
-python manage.py upload_articles
+python manage.py scrape_videos
+```
+- Retrieves latest NHL game recap videos
+- Extracts video metadata and descriptions
+- Saves new highlights
+
+### Upload to Bluesky
+```bash
+python manage.py upload
+```
+- Retrieves new articles and videos
+- Generates AI summaries
+- Publishes alternating content to Bluesky
+
+## Configuration
+
+### Environment Variables
+Create a `.env` file:
+
+```
+PDS_HOST=<Bluesky PDS host>
+USERNAME=<Bluesky username>
+PASSWORD=<Bluesky password>
+API_KEY=<YouTube Data API key>
 ```
 
-## Dependencies
+## Technologies
+
 - Django
 - BeautifulSoup4
 - Requests
-- AT Protocol Python Client
-- OpenAI Python SDK
-- Python Dotenv
+- Ollama
+- Mistral LLM
+- YouTube Data API
+- AT Protocol (Bluesky)
 
-## Future Improvements
-- Enhance error handling and logging
-- Expand to multiple news sources
-- Support for additional social media platforms
+## Dependencies
+
+- Django
+- beautifulsoup4
+- requests
+- langchain-ollama
+- bluesky-atproto
+- python-dotenv
+- youtube-data-api
+
+## Roadmap
+
+- [ ] Expand scraping sources
+- [ ] Implement advanced content filtering
+- [ ] Enhance AI summarization techniques
+- [ ] Add comprehensive logging
+- [ ] Create monitoring dashboard
+
+## Performance Considerations
+
+- Transactional database operations
+- URL normalization
+- Exponential backoff for API requests
+- Configurable scraping parameters
 
 ## License
-This project is licensed under the MIT License - see below for details:
 
-```
-MIT License
+MIT License - See the LICENSE file for details.
 
-Copyright (c) 2025
+## Contributing
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Contributions are welcome! Please submit pull requests or open issues to suggest improvements.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```

@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 )
                 
                 results = scraper.get_latest_video(
-                    max_results=15,
+                    max_results=10,
                     video_duration="medium"
                 )
                 

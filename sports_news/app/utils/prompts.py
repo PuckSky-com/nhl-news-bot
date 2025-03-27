@@ -1,145 +1,194 @@
 from langchain.prompts import PromptTemplate
+import re
+
+# Define content categories with appropriate emoji sets
+categories = {
+    "contract": {
+        "keywords": ["signs", "contract", "deal", "extension", "million", "$", "salary", "cap hit"],
+        "emojis": ["💰", "✍️", "📝"],
+        "hashtags": ["#HockeyNews", "#NHLContract"],
+        "tone": "excited, business-like, or evaluative of the deal's implications"
+    },
+    "playoff": {
+        "keywords": ["playoff", "stanley cup", "postseason", "elimination", "clinch", "wild-card", "wild card"],
+        "emojis": ["🏆", "🔥", "💪"],
+        "hashtags": ["#StanleyCup", "#NHLPlayoffs"],
+        "tone": "intense, high-stakes, dramatic, or excited about playoff implications"
+    },
+    "injury": {
+        "keywords": ["injury", "injured", "out", "recovery", "miss", "upper-body", "lower-body", "concussion", "surgery"],
+        "negative_context": ["st. patrick", "holiday", "gear", "event", "tournament"],
+        "emojis": ["🏥", "⚕️", "🤕"],
+        "hashtags": ["#NHLInjury", "#HockeyNews"],
+        "tone": "concerned but factual, acknowledging impact on team"
+    },
+    "game_preview": {
+        "keywords": ["tonight", "face", "host", "visit", "matchup", "vs", "against", "seek", "aim", "go for", "series"],
+        "emojis": ["🏒", "⚔️", "🎮"],
+        "hashtags": ["#HockeyNews", "#NHL"],
+        "tone": "anticipatory, highlighting key matchups or storylines"
+    },
+    "game_recap": {
+        "keywords": ["win", "defeat", "beat", "edge", "victory", "score", "goals", "assists", "saves", "shutout", "surge past"],
+        "emojis": ["🚨", "🥅", "🔥"],
+        "hashtags": ["#HockeyNight", "#NHL"],
+        "tone": "celebratory or analytical, highlighting standout performances"
+    },
+    "milestone": {
+        "keywords": ["record", "milestone", "historic", "career", "youngest", "oldest", "first", "1st"],
+        "emojis": ["🎯", "🏅", "📊"],
+        "hashtags": ["#NHLMilestone", "#HockeyHistory"],
+        "tone": "impressed, appreciative of the achievement's significance"
+    },
+    "event": {
+        "keywords": ["global series", "tournament", "event", "arena", "all-star", "festival", "heritage classic"],
+        "emojis": ["🌍", "🏟️", "🎭"],
+        "hashtags": ["#NHLEvents", "#HockeyWorld"],
+        "tone": "excited about the unique event or its implications"
+    }
+}
+
+# Hockey context database to help with informed commentary
+hockey_context = {
+    "playoff_implications": "Late-season games have huge standings implications as teams battle for playoff spots and seeding.",
+    "scoring_trends": "NHL scoring has been trending upward in recent seasons, with team averages above 3 goals per game.",
+    "injury_impact": "Injuries to key players can significantly impact a team's playoff chances and lineup decisions.",
+    "contract_context": "The NHL salary cap creates tough decisions for teams managing their rosters and long-term financial commitments.",
+    "milestone_context": "Individual records and milestones are highly respected in hockey culture and often celebrated league-wide.",
+    "goalie_importance": "Strong goaltending becomes increasingly crucial during playoff pushes and postseason series.",
+    "home_advantage": "Home ice advantage typically gives teams a significant edge, especially in crucial matchups.",
+    "rivalry_context": "Traditional rivalries like Bruins-Canadiens or Penguins-Capitals add extra intensity to regular-season matchups.",
+    "trade_deadline": "The NHL trade deadline creates roster upheaval as teams position themselves as buyers or sellers.",
+    "special_teams": "Power play and penalty kill percentages can make or break a team's success in close games.",
+    "coaching_impact": "Coaching decisions about line combinations and matchups are heavily scrutinized during winning and losing streaks."
+}
+
+# Detect team names to add team hashtags
+teams = {
+    "avalanche": "#GoAvsGo",
+    "bruins": "#NHLBruins",
+    "sabres": "#LetsGoBuffalo",
+    "hurricanes": "#LetsGoCanes",
+    "blackhawks": "#Blackhawks",
+    "blue jackets": "#CBJ",
+    "stars": "#TexasHockey",
+    "red wings": "#LGRW",
+    "oilers": "#LetsGoOilers",
+    "panthers": "#TimeToHunt",
+    "kings": "#GoKingsGo",
+    "wild": "#mnwild",
+    "canadiens": "#GoHabsGo",
+    "predators": "#Preds",
+    "devils": "#NJDevils",
+    "islanders": "#Isles",
+    "rangers": "#NYR",
+    "senators": "#GoSensGo",
+    "flyers": "#BringItToBroad",
+    "penguins": "#LetsGoPens",
+    "sharks": "#SJSharks",
+    "kraken": "#SeaKraken",
+    "blues": "#STLBlues",
+    "lightning": "#GoBolts",
+    "maple leafs": "#LeafsForever",
+    "leafs": "#LeafsForever",
+    "canucks": "#Canucks",
+    "golden knights": "#VegasBorn",
+    "capitals": "#ALLCAPS",
+    "jets": "#GoJetsGo",
+    "coyotes": "#Yotes",
+    "flames": "#CofRed",
+    "ducks": "#FlyTogether"
+}
+
+# Team contexts to help with informed commentary
+team_contexts = {
+    "avalanche": "Fast-paced team with strong offensive capabilities; Stanley Cup champions in 2022.",
+    "bruins": "Original Six team known for defensive strength; consistent playoff contenders.",
+    "sabres": "Young roster aiming to break a lengthy playoff absence; focusing on talent development.",
+    "hurricanes": "Strategic team emphasizing analytics; strong defensive metrics and aggressive forechecking.",
+    "blackhawks": "Rebuilding phase post-2010s dynasty; investing in youth development.",
+    "blue_jackets": "Hardworking team striving for playoff consistency; known for resilience.",
+    "stars": "Balanced squad with solid goaltending; reached Stanley Cup Final in 2020.",
+    "red_wings": "Original Six team progressing through rebuild; historically rich franchise.",
+    "oilers": "Dynamic offense led by McDavid and Draisaitl; seeking deeper playoff runs.",
+    "panthers": "Defending Stanley Cup champions with depth in offense and physical play.",
+    "kings": "Blend of veteran experience and youth; integrating new talent effectively.",
+    "wild": "Strong defensive play and reliable goaltending; regular playoff participants.",
+    "canadiens": "Historic Original Six franchise; NHL's most decorated team.",
+    "predators": "Renowned for developing elite defensemen; consistent playoff appearances.",
+    "devils": "Youthful, fast-paced team centered around Hughes and Hischier; speed-focused gameplay.",
+    "islanders": "Disciplined defensive structure; known for systematic play.",
+    "rangers": "Original Six team with a mix of star power and young talent; strong goaltending legacy.",
+    "senators": "Rebuilding around a young core; offensive potential on the rise.",
+    "flyers": "Physical playstyle with a dedicated fanbase; aiming for playoff resurgence.",
+    "penguins": "Experienced core led by Crosby and Malkin; multiple championships.",
+    "sharks": "Transitioning with focus on youth; rebuilding after sustained success.",
+    "kraken": "Expansion team establishing its identity; reached playoffs in second season.",
+    "blues": "Physical, aggressive forechecking; Stanley Cup champions in 2019.",
+    "lightning": "Skilled team with a championship core; back-to-back Stanley Cups in 2020 and 2021.",
+    "maple_leafs": "Original Six team with potent offense; large, passionate fanbase.",
+    "canucks": "Skilled, youthful core; emphasis on offensive creativity.",
+    "golden_knights": "Successful expansion franchise; Stanley Cup champions in 2023.",
+    "capitals": "Led by Ovechkin, known for offensive strength; Stanley Cup champions in 2018.",
+    "jets": "Combination of size and skill; strong goaltending and offensive threats.",
+    "coyotes": "Team formerly located in Arizona. They moved to Utah and rebranded as the Utah Hockey Club",
+    "flames": "Physical team with balanced attack; known for aggressive forecheck.",
+    "ducks": "Team transitioning to younger core; developing prospects.",
+    "utah_hockey_club": "Newly relocated team to Salt Lake City; building a fresh fanbase and team identity."
+}
 
 def get_prompt(title: str, desc: str, highlight: bool = False):
     # Analyze content to determine article type
     content = (title + " " + desc).lower()
     
-    # Define content categories with appropriate emoji sets
-    categories = {
-        "contract": {
-            "keywords": ["signs", "contract", "deal", "extension", "million", "$", "salary", "cap hit"],
-            "emojis": ["💰", "✍️", "📝"],
-            "hashtags": ["#HockeyNews", "#NHLContract"],
-            "tone": "excited, business-like, or evaluative of the deal's implications"
-        },
-        "playoff": {
-            "keywords": ["playoff", "stanley cup", "postseason", "elimination", "clinch", "wild-card", "wild card"],
-            "emojis": ["🏆", "🔥", "💪"],
-            "hashtags": ["#StanleyCup", "#NHLPlayoffs"],
-            "tone": "intense, high-stakes, dramatic, or excited about playoff implications"
-        },
-        "injury": {
-            "keywords": ["injury", "injured", "out", "recovery", "miss", "upper-body", "lower-body", "concussion", "surgery"],
-            "negative_context": ["st. patrick", "holiday", "gear", "event", "tournament"],
-            "emojis": ["🏥", "⚕️", "🤕"],
-            "hashtags": ["#NHLInjury", "#HockeyNews"],
-            "tone": "concerned but factual, acknowledging impact on team"
-        },
-        "game_preview": {
-            "keywords": ["tonight", "face", "host", "visit", "matchup", "vs", "against", "seek", "aim", "go for", "series"],
-            "emojis": ["🏒", "⚔️", "🎮"],
-            "hashtags": ["#HockeyNews", "#NHL"],
-            "tone": "anticipatory, highlighting key matchups or storylines"
-        },
-        "game_recap": {
-            "keywords": ["win", "defeat", "beat", "edge", "victory", "score", "goals", "assists", "saves", "shutout", "surge past"],
-            "emojis": ["🚨", "🥅", "🔥"],
-            "hashtags": ["#HockeyNight", "#NHL"],
-            "tone": "celebratory or analytical, highlighting standout performances"
-        },
-        "milestone": {
-            "keywords": ["record", "milestone", "historic", "career", "youngest", "oldest", "first", "1st"],
-            "emojis": ["🎯", "🏅", "📊"],
-            "hashtags": ["#NHLMilestone", "#HockeyHistory"],
-            "tone": "impressed, appreciative of the achievement's significance"
-        },
-        "event": {
-            "keywords": ["global series", "tournament", "event", "arena", "all-star", "festival", "heritage classic"],
-            "emojis": ["🌍", "🏟️", "🎭"],
-            "hashtags": ["#NHLEvents", "#HockeyWorld"],
-            "tone": "excited about the unique event or its implications"
-        }
-    }
+    # Extract score from description
+    score_pattern = r'(\w+)\s+beat\s+the\s+(\w+)\s+(\d+-\d+)'
+    score_match = re.search(score_pattern, desc)
     
-    # Hockey context database to help with informed commentary
-    hockey_context = {
-        "playoff_implications": "Late-season games have huge standings implications as teams battle for playoff spots and seeding.",
-        "scoring_trends": "NHL scoring has been trending upward in recent seasons, with team averages above 3 goals per game.",
-        "injury_impact": "Injuries to key players can significantly impact a team's playoff chances and lineup decisions.",
-        "contract_context": "The NHL salary cap creates tough decisions for teams managing their rosters and long-term financial commitments.",
-        "milestone_context": "Individual records and milestones are highly respected in hockey culture and often celebrated league-wide.",
-        "goalie_importance": "Strong goaltending becomes increasingly crucial during playoff pushes and postseason series.",
-        "home_advantage": "Home ice advantage typically gives teams a significant edge, especially in crucial matchups.",
-        "rivalry_context": "Traditional rivalries like Bruins-Canadiens or Penguins-Capitals add extra intensity to regular-season matchups.",
-        "trade_deadline": "The NHL trade deadline creates roster upheaval as teams position themselves as buyers or sellers.",
-        "special_teams": "Power play and penalty kill percentages can make or break a team's success in close games.",
-        "coaching_impact": "Coaching decisions about line combinations and matchups are heavily scrutinized during winning and losing streaks."
-    }
+    exact_score = ""
+    winning_team = ""
+    losing_team = ""
+    score_display = ""
     
-    # Detect team names to add team hashtags
-    teams = {
-        "avalanche": "#GoAvsGo",
-        "bruins": "#NHLBruins",
-        "sabres": "#LetsGoBuffalo",
-        "hurricanes": "#LetsGoCanes",
-        "blackhawks": "#Blackhawks",
-        "blue jackets": "#CBJ",
-        "stars": "#TexasHockey",
-        "red wings": "#LGRW",
-        "oilers": "#LetsGoOilers",
-        "panthers": "#TimeToHunt",
-        "kings": "#GoKingsGo",
-        "wild": "#mnwild",
-        "canadiens": "#GoHabsGo",
-        "predators": "#Preds",
-        "devils": "#NJDevils",
-        "islanders": "#Isles",
-        "rangers": "#NYR",
-        "senators": "#GoSensGo",
-        "flyers": "#BringItToBroad",
-        "penguins": "#LetsGoPens",
-        "sharks": "#SJSharks",
-        "kraken": "#SeaKraken",
-        "blues": "#STLBlues",
-        "lightning": "#GoBolts",
-        "maple leafs": "#LeafsForever",
-        "leafs": "#LeafsForever",
-        "canucks": "#Canucks",
-        "golden knights": "#VegasBorn",
-        "capitals": "#ALLCAPS",
-        "jets": "#GoJetsGo",
-        "coyotes": "#Yotes",
-        "flames": "#CofRed",
-        "ducks": "#FlyTogether"
-    }
+    if score_match:
+        winning_team = score_match.group(1)
+        losing_team = score_match.group(2)
+        exact_score = score_match.group(3)
+        score_parts = exact_score.split('-')
+        if len(score_parts) == 2:
+            win_score, lose_score = score_parts
+            score_display = f"{winning_team} {win_score}, {losing_team} {lose_score}"
     
-    # Team contexts to help with informed commentary
-    team_contexts = {
-        "avalanche": "Fast-paced team with strong offensive capabilities; Stanley Cup champions in 2022.",
-        "bruins": "Original Six team known for defensive strength; consistent playoff contenders.",
-        "sabres": "Young roster aiming to break a lengthy playoff absence; focusing on talent development.",
-        "hurricanes": "Strategic team emphasizing analytics; strong defensive metrics and aggressive forechecking.",
-        "blackhawks": "Rebuilding phase post-2010s dynasty; investing in youth development.",
-        "blue_jackets": "Hardworking team striving for playoff consistency; known for resilience.",
-        "stars": "Balanced squad with solid goaltending; reached Stanley Cup Final in 2020.",
-        "red_wings": "Original Six team progressing through rebuild; historically rich franchise.",
-        "oilers": "Dynamic offense led by McDavid and Draisaitl; seeking deeper playoff runs.",
-        "panthers": "Defending Stanley Cup champions with depth in offense and physical play.",
-        "kings": "Blend of veteran experience and youth; integrating new talent effectively.",
-        "wild": "Strong defensive play and reliable goaltending; regular playoff participants.",
-        "canadiens": "Historic Original Six franchise; NHL's most decorated team.",
-        "predators": "Renowned for developing elite defensemen; consistent playoff appearances.",
-        "devils": "Youthful, fast-paced team centered around Hughes and Hischier; speed-focused gameplay.",
-        "islanders": "Disciplined defensive structure; known for systematic play.",
-        "rangers": "Original Six team with a mix of star power and young talent; strong goaltending legacy.",
-        "senators": "Rebuilding around a young core; offensive potential on the rise.",
-        "flyers": "Physical playstyle with a dedicated fanbase; aiming for playoff resurgence.",
-        "penguins": "Experienced core led by Crosby and Malkin; multiple championships.",
-        "sharks": "Transitioning with focus on youth; rebuilding after sustained success.",
-        "kraken": "Expansion team establishing its identity; reached playoffs in second season.",
-        "blues": "Physical, aggressive forechecking; Stanley Cup champions in 2019.",
-        "lightning": "Skilled team with a championship core; back-to-back Stanley Cups in 2020 and 2021.",
-        "maple_leafs": "Original Six team with potent offense; large, passionate fanbase.",
-        "canucks": "Skilled, youthful core; emphasis on offensive creativity.",
-        "golden_knights": "Successful expansion franchise; Stanley Cup champions in 2023.",
-        "capitals": "Led by Ovechkin, known for offensive strength; Stanley Cup champions in 2018.",
-        "jets": "Combination of size and skill; strong goaltending and offensive threats.",
-        "coyotes": "Team formerly located in Arizona. They moved to Utah and rebranded as the Utah Hockey Club",
-        "flames": "Physical team with balanced attack; known for aggressive forecheck.",
-        "ducks": "Team transitioning to younger core; developing prospects.",
-        "utah_hockey_club": "Newly relocated team to Salt Lake City; building a fresh fanbase and team identity."
-    }
-
+    # Backup pattern for different phrasings
+    if not score_match:
+        alt_pattern = r'(\w+)\s+(?:defeated|edged|topped|downed)\s+(?:the\s+)?(\w+)\s+(\d+-\d+)'
+        alt_match = re.search(alt_pattern, desc)
+        if alt_match:
+            winning_team = alt_match.group(1)
+            losing_team = alt_match.group(2)
+            exact_score = alt_match.group(3)
+            score_parts = exact_score.split('-')
+            if len(score_parts) == 2:
+                win_score, lose_score = score_parts
+                score_display = f"{winning_team} {win_score}, {losing_team} {lose_score}"
+    
+    # If all pattern matching fails, extract explicitly from description
+    if not score_display:
+        # Look for explicit score formats like "5-4" or "3-2"
+        score_nums = re.findall(r'(\d+-\d+)', desc)
+        if score_nums:
+            exact_score = score_nums[0]  # Use the first score found
+            # Try to determine teams from context
+            teams_mentioned = []
+            for team in teams.keys():
+                if team in content:
+                    teams_mentioned.append(team.title())
+            
+            if len(teams_mentioned) >= 2:
+                score_display = f"{teams_mentioned[0]} {exact_score.split('-')[0]}, {teams_mentioned[1]} {exact_score.split('-')[1]}"
+            else:
+                # If we can't reliably determine teams, just mention the score directly
+                score_display = f"Final Score: {exact_score}"
 
     # Determine content category with weighted scoring
     category_scores = {}
@@ -232,10 +281,12 @@ def get_prompt(title: str, desc: str, highlight: bool = False):
             You have an informative, objective tone and accurate hockey knowledge.
 
             Title of article: {title}
-            Description: {desc}
+            Description of game including the score: {desc}
             Content category: {selected_category}
             Required emoji: {emoji}
             Required hashtags: {hashtag_str}
+            
+            EXTRACTED SCORE: {score_display}
             
             Hockey context (use this to inform your commentary):
             {context_str}
@@ -243,7 +294,8 @@ def get_prompt(title: str, desc: str, highlight: bool = False):
             TASK:
             Write ONE factual hockey game highlight for social media that reports the key information.
             - MUST be EXACTLY 150-250 characters long
-            - Focus on the FINAL SCORE and KEY STATISTICS
+            - MUST use the EXACT FINAL SCORE as provided in "EXTRACTED SCORE" field: {score_display}
+            - DO NOT modify or recalculate the score under any circumstances
             - Use clear, neutral language that emphasizes facts over emotion
             - Report goals, shots, power play conversions or other relevant statistics
             - Maintain an objective tone without team bias

@@ -1,10 +1,10 @@
 from langchain_ollama.llms import OllamaLLM
 from app.utils.prompts import get_prompt
 
-# Set the model name - using phi from your available models
+
 MODEL_NAME = "mistral"
 
-def send_request(title: str, subtitle: str = "", body: str = ""):
+def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool = False):
     # Create the Ollama LLM instance
     llm = OllamaLLM(
         model=MODEL_NAME, 
@@ -14,7 +14,7 @@ def send_request(title: str, subtitle: str = "", body: str = ""):
     )
     
     # Define a much more specific prompt template
-    prompt = get_prompt(title, subtitle)
+    prompt = get_prompt(title, subtitle, highlight)
     
     try:
         # Use the modern pipe syntax

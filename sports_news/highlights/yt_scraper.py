@@ -1,6 +1,7 @@
 from highlights.models import Video
 import requests
 import time
+import re
 
 class YouTubeScraper:
 
@@ -52,6 +53,21 @@ class YouTubeScraper:
             print(f"Failed to parse API response: {e}")
             return None
         
+    def get_full_video_description(self, video_id):
+        """Fetch the full description for a specific video."""
+        try:
+            url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id}&key={self.api_key}"
+            data = self.send_api_req(url)
+            
+            if "items" in data and data["items"]:
+                description = data["items"][0]["snippet"]["description"]
+                return re.split(r'-{6,}', description)[0].strip()
+
+            return ""
+        except (requests.exceptions.RequestException, KeyError, IndexError) as e:
+            print(f"Error fetching full video description: {e}")
+            return ""
+        
     def get_latest_video(self, max_results=5, video_duration=None):
         """Fetch the latest video(s) from the channel."""
         try:
@@ -74,15 +90,18 @@ class YouTubeScraper:
                         video_id = item["id"]["videoId"]
                         if video_id:
                             if not Video.objects.filter(vid_id=video_id).exists():
+                                # Fetch the full description
+                                full_description = self.get_full_video_description(video_id)
+                                
                                 Video.objects.create(
                                     vid_id = video_id,
                                     title = title,
-                                    description = item["snippet"]["description"],
+                                    description = full_description,  # Use full description
                                     img_url = item["snippet"]["thumbnails"]["high"]["url"],
-                                    embed_url = f"https://www.youtube.com/watch?v={item['id']['videoId']}",
+                                    embed_url = f"https://www.youtube.com/watch?v={video_id}",
                                     is_new = True
                                 )
-                                titles.append(f"Uploaded: {item['id']['videoId']}")
+                                titles.append(f"Uploaded: {video_id}")
                                 count += 1
 
                 return {
