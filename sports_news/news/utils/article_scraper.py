@@ -86,7 +86,7 @@ class ArticleScraper(ABC):
                 article = self.scrape_page(article_page)
                 img = self.extract_thumbnail(article_page)
                 
-                if article and img:
+                if article and img and article['description']:
                     Article.objects.create(
                         title=article['title'],
                         description=article['description'],
