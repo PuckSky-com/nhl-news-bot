@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 import os
 
 load_dotenv()
@@ -134,3 +135,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = os.getenv('CELERY_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'scrape_nhl_news_every_hour': {
+        'task': 'news.tasks.scrape_nhl_news',  # Replace with the correct task path
+        'schedule': crontab(minute=30, hour='*'),  # Runs every hour on the hour
+    },
+    'scrape_youtube_videos_every_hour': {
+        'task': 'highlights.tasks.scrape_youtube_videos',  # Replace with the correct task path
+        'schedule': crontab(minute=30, hour='*'),  # Runs every hour on the hour
+    },
+    'upload_to_bluesky_every_hour': {
+        'task': 'app.tasks.upload_to_bluesky',  # Replace with the correct task path
+        'schedule': crontab(minute=0, hour='*'),  # Runs every hour on the hour
+    },
+}
