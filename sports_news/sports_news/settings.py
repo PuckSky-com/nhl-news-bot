@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'sports_news.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'puckdb',
-        'USER': 'news-bot',
-        'PASSWORD': 'admin',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -147,7 +147,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'scrape_youtube_videos_every_hour': {
         'task': 'highlights.tasks.scrape_youtube_videos',  # Replace with the correct task path
-        'schedule': crontab(minute=30, hour='*'),  # Runs every hour on the hour
+        'schedule': crontab(minute=45, hour='*'),  # Runs every hour on the hour
     },
     'upload_to_bluesky_every_hour': {
         'task': 'app.tasks.upload_to_bluesky',  # Replace with the correct task path
