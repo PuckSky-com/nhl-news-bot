@@ -1,15 +1,28 @@
-import os
+# highlights/tasks.py
 from celery import shared_task
-from highlights.yt_scraper import YouTubeScraper
-from dotenv import load_dotenv
+from highlights.utils.video_scraper import VideoScraperService
+import logging
+
+logger = logging.getLogger(__name__)
 
 @shared_task
-def scrape_youtube_videos():
-    load_dotenv()
-    api_key = os.getenv('API_KEY')
-    channel_id = "UCVhibwHk4WKw4leUt6JfRLg"
+def scrape_youtube_videos(channel_id=None, max_results=10, video_duration="medium"):
+    """Celery task to scrape YouTube videos and add them to the database"""
+    task_logger = TaskLogger()
+    scraper_service = VideoScraperService(logger=task_logger)
+    return scraper_service.scrape_videos(
+        channel_id=channel_id,
+        max_results=max_results,
+        video_duration=video_duration
+    )
 
-    scraper = YouTubeScraper(api_key=api_key, channel_id=channel_id)
-    results = scraper.get_latest_video(max_results=10, video_duration="medium")
-
-    return {"videos_scraped": results["count"], "titles": results["titles"]}
+class TaskLogger:
+    """Logger adapter for Celery tasks that logs to the Celery logger"""
+    def info(self, message):
+        logger.info(message)
+        
+    def error(self, message):
+        logger.error(message)
+        
+    def warning(self, message):
+        logger.warning(message)

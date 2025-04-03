@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from news.models import Article
 
-class ArticleScraper(ABC):
+class ScraperBase(ABC):
     """
     Abstract base class for web scrapers.
     Defines the common interface that all scrapers should implement.

@@ -1,6 +1,6 @@
-from news.utils.article_scraper import ArticleScraper
+from news.utils.scraper_base import ScraperBase
 
-class NHLScraper(ArticleScraper):
+class NHLScraper(ScraperBase):
 
     def __init__(self):
         super().__init__("https://www.nhl.com/news/")

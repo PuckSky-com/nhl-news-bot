@@ -1,12 +1,22 @@
 from langchain_ollama.llms import OllamaLLM
 from app.utils.prompts import get_prompt
-
+import psutil
 
 MODEL_NAME = "mistral"
 
 def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool = False):
     print(f"=== LLM REQUEST DEBUG ===")
     print(f"Time: {time.ctime()}")
+    
+    # Check available memory before proceeding
+    available_mem_gb = psutil.virtual_memory().available / (1024 * 1024 * 1024)
+    print(f"Available memory: {available_mem_gb:.2f} GB")
+    
+    if available_mem_gb < 6.0:  # Require at least 6GB to be safe
+        print(f"WARNING: Not enough memory available ({available_mem_gb:.2f} GB)")
+        print("Falling back to direct method...")
+        return send_request_direct(title, subtitle, highlight)
+    
     print(f"Title: {title}")
     print(f"Subtitle: {subtitle[:50]}...")
     print(f"Highlight: {highlight}")

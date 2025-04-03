@@ -1,0 +1,9 @@
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 03, 2025 - 01:44:19
+Django version 5.1.7, using settings 'sports_news.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+

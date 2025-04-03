@@ -1,12 +1,21 @@
+# sports_news/news/tasks.py
 from celery import shared_task
-from django.utils.timezone import now
-from news.nhl_scraper import NHLScraper
+from news.utils.news_scraper import NewsScraperService
+import logging
+
+logger = logging.getLogger(__name__)
 
 @shared_task
 def scrape_nhl_news():
-    try:
-        scraper = NHLScraper()
-        results = scraper.run()
-        return {"timestamp": str(now()), "articles_scraped": results['count']}
-    except Exception as e:
-        return {"error": str(e)}
+    """Celery task to scrape NHL news and add them to the database"""
+    task_logger = TaskLogger()
+    scraper_service = NewsScraperService(logger=task_logger)
+    return scraper_service.scrape_nhl_news()
+
+class TaskLogger:
+    """Logger adapter for Celery tasks that logs to the Celery logger"""
+    def info(self, message):
+        logger.info(message)
+        
+    def error(self, message):
+        logger.error(message)

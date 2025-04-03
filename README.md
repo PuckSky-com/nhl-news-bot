@@ -6,7 +6,7 @@ A sophisticated Django-based web scraping and content distribution system that a
 ## Key Features
 
 ### Robust Web Scraping Architecture
-* **Abstract Scraper Design**: Implements an extensible `ArticleScraper` base class
+* **Abstract Scraper Design**: Implements an extensible `ScraperBase` base class for news articles
 * **Flexible Scraping Strategy**: Supports multiple content sources with a consistent interface
 * **Error Handling**: Comprehensive error management and retry mechanisms
 

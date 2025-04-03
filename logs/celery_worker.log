@@ -1,0 +1,25 @@
+ 
+ -------------- celery@pds.thomasmcleary.com v5.5.0 (immunity)
+--- ***** ----- 
+-- ******* ---- Linux-6.12.20+rpt-rpi-2712-aarch64-with-glibc2.36 2025-04-03 16:32:04
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         sports_news:0x7fffa9956990
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     disabled://
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . app.tasks.upload_to_bluesky
+  . highlights.tasks.scrape_youtube_videos
+  . news.tasks.scrape_nhl_news
+
+[2025-04-03 16:32:04,341: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2025-04-03 16:32:04,344: INFO/MainProcess] mingle: searching for neighbors
+[2025-04-03 16:32:05,354: INFO/MainProcess] mingle: all alone
+[2025-04-03 16:32:05,365: INFO/MainProcess] celery@pds.thomasmcleary.com ready.

@@ -1,0 +1,59 @@
+[2025-04-03 17:31:28] =========================================
+[2025-04-03 17:31:28] Starting services for Django application
+[2025-04-03 17:31:28] =========================================
+[2025-04-03 17:31:28] No virtual environment found at /home/tmcleary/news-bot/pds-uploader/venv. Using system Python.
+[2025-04-03 17:31:28] Checking system resources...
+[2025-04-03 17:31:28] Memory: 23% used (1913 MB / 8051 MB)
+[2025-04-03 17:31:28] Disk: 51% used
+[2025-04-03 17:31:28] CPU Load: 0.12
+[2025-04-03 17:31:28] Redis is already running.
+[2025-04-03 17:31:28] Django is already running.
+[2025-04-03 17:31:28] Stopping Celery worker...
+[2025-04-03 17:31:31] Starting Celery worker...
+[2025-04-03 17:31:34] Celery worker started successfully.
+[2025-04-03 17:31:34] Stopping Celery Beat...
+[2025-04-03 17:31:36] Starting Celery Beat...
+[2025-04-03 17:31:39] Celery Beat started successfully.
+[2025-04-03 17:31:39] =========================================
+[2025-04-03 17:31:39] Services status:
+[2025-04-03 17:31:39] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-03 17:31:39] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-03 17:31:39] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-03 17:31:39] To stop all services: pkill -f 'celery|redis-server|python.*manage.py'
+[2025-04-03 17:31:39] =========================================
+[2025-04-03 17:31:39] Running processes:
+[2025-04-03 17:31:39] 675 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-03 17:31:39] 10860 python manage.py runserver
+[2025-04-03 17:31:39] 67457 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver
+[2025-04-03 17:31:39] 67878 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
+[2025-04-03 17:31:39] 67920 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
+[2025-04-03 17:31:39] 67924 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
+[2025-04-03 17:31:56] =========================================
+[2025-04-03 17:31:56] Starting services for Django application
+[2025-04-03 17:31:56] =========================================
+[2025-04-03 17:31:56] Checking system resources...
+[2025-04-03 17:31:56] Memory: 37% used (2995 MB / 8051 MB)
+[2025-04-03 17:31:56] Disk: 51% used
+[2025-04-03 17:31:56] CPU Load: 0.74
+[2025-04-03 17:31:56] Redis is already running.
+[2025-04-03 17:31:56] Django is already running.
+[2025-04-03 17:31:56] Stopping Celery worker...
+[2025-04-03 17:31:59] Starting Celery worker...
+[2025-04-03 17:32:02] Celery worker started successfully.
+[2025-04-03 17:32:02] Stopping Celery Beat...
+[2025-04-03 17:32:04] Starting Celery Beat...
+[2025-04-03 17:32:07] Celery Beat started successfully.
+[2025-04-03 17:32:07] =========================================
+[2025-04-03 17:32:07] Services status:
+[2025-04-03 17:32:07] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-03 17:32:07] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-03 17:32:07] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-03 17:32:07] To stop all services: pkill -f 'celery|redis-server|python.*manage.py'
+[2025-04-03 17:32:07] =========================================
+[2025-04-03 17:32:07] Running processes:
+[2025-04-03 17:32:07] 675 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-03 17:32:07] 10860 python manage.py runserver
+[2025-04-03 17:32:07] 67457 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver
+[2025-04-03 17:32:07] 68168 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
+[2025-04-03 17:32:07] 68205 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
+[2025-04-03 17:32:07] 68213 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
