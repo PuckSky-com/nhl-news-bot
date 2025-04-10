@@ -1,5 +1,5 @@
 from app.utils.bluesky_post import upload_content, is_youtube_url
-from app.utils import llama as llm
+from app.utils import llm as llm
 from django.db import transaction
 from news.models import Article
 from highlights.models import Video
@@ -75,7 +75,7 @@ class ContentUploader:
 
             return f"Uploaded {len(new_articles)} articles and {len(new_videos)} videos."
     
-    def upload_article(self, article):
+    def upload_article(self, article: Article):
         """Uploads an article to Bluesky"""
         try:
             self.log_info(f"Starting upload for article: {article.title}")
@@ -103,7 +103,7 @@ class ContentUploader:
             self.log_error(f"Error uploading article '{article.title}': {str(e)}")
             self.log_error(traceback.format_exc())
 
-    def upload_video(self, video):
+    def upload_video(self, video: Video):
         """Uploads a video to Bluesky"""
         try:
             # Check if the video URL is a YouTube URL and extract the ID

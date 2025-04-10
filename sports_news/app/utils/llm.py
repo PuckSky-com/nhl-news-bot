@@ -1,8 +1,13 @@
 from langchain_ollama.llms import OllamaLLM
+from openai import OpenAI
 from app.utils.prompts import get_prompt
 import psutil
+import requests
+import time
+import os
 
-MODEL_NAME = "mistral"
+OLLAMA_MODEL = "mistral"
+LLAMA_API_MODEL = "llama3-70b"
 
 def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool = False):
     print(f"=== LLM REQUEST DEBUG ===")
@@ -15,7 +20,14 @@ def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool
     if available_mem_gb < 6.0:  # Require at least 6GB to be safe
         print(f"WARNING: Not enough memory available ({available_mem_gb:.2f} GB)")
         print("Falling back to direct method...")
-        return send_request_direct(title, subtitle, highlight)
+        try:
+            result = send_api_request(title, subtitle, highlight)
+            if not result:
+                raise Exception("API request failed")
+            else:
+                return result
+        except:
+            return send_request_direct(title, subtitle, highlight)
     
     print(f"Title: {title}")
     print(f"Subtitle: {subtitle[:50]}...")
@@ -25,7 +37,7 @@ def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool
         # Create the Ollama LLM instance
         print("Creating OllamaLLM instance...")
         llm = OllamaLLM(
-            model=MODEL_NAME, 
+            model=OLLAMA_MODEL, 
             base_url="http://localhost:11434",
             temperature=0.3,
             max_tokens=250,
@@ -64,11 +76,92 @@ def send_request(title: str, subtitle: str = "", body: str = "", highlight: bool
         print(traceback.format_exc())
         print("=== END ERROR ===")
         return None
+    
+def send_api_request(title: str, subtitle: str, highlight: bool = False):
+    print(f"=== API REQUEST DEBUG ===")
+    print(f"Time: {time.ctime()}")
+    print(f"Title: {title}")
+    print(f"Subtitle: {subtitle[:50]}...")
+    print(f"Highlight: {highlight}")
+
+    # Check if API token is available
+    api_token = os.getenv('LLAMA_API_TOKEN')
+    if not api_token:
+        print("WARNING: LLAMA_API_TOKEN not found in environment variables")
+        return None
+
+    requirements = (
+        " - MUST BE NO MORE THAN 250 CHARACTERS TOTAL"
+        " - DO NOT try to guess a player's first name if it is not included"
+        " - DO NOT substitute or invent players, teams, or facts"
+        " - DO NOT include puzzles, questions, or unrelated content"
+        " - DO NOT include any instructions or placeholders"
+        " - DO NOT make up information not present in the title or description"
+        " - ONLY output the final social media post text with no prefix or explanation" 
+    )
+
+    client = OpenAI(
+        api_key = api_token,
+        base_url = "https://api.llmapi.com/"
+    )
+
+    if highlight:
+        prompt = (
+            f"Write a short, engaging social media post about this recent hockey game. {subtitle}\n"
+            f"{requirements}"
+        )
+    else:
+        prompt = (
+            f"Title: {title}\n"
+            f"Subtitle: {subtitle}\n"
+            "Write a short, engaging social media post about this hockey news article.\n"
+            f"{requirements}"
+            )
+    
+    print(f"Constructed prompt (length: {len(prompt)})")
+    print(f"Using model: {LLAMA_API_MODEL}")
+        
+    try:
+        print(f"Sending API request at {time.ctime()}...")
+        start_time = time.time()
+        
+        chat_completion = client.chat.completions.create(
+            messages = [
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model=LLAMA_API_MODEL,
+            stream=False
+        )
+        
+        end_time = time.time()
+        print(f"Response received in {end_time - start_time:.2f} seconds")
+        
+        result = chat_completion.choices[0].message.content
+        clean_result = result.strip()
+        
+        print(f"Result cleaned, length: {len(clean_result)}")
+        
+        if len(clean_result) > 250:
+            clean_result = clean_result[:247] + "..."
+            print("Result truncated to 250 chars")
+            
+        print(f"Generated text: {clean_result[:50]}...")
+        print("=== API REQUEST COMPLETE ===")
+        
+        return clean_result
+    except Exception as e:
+        print(f"=== API REQUEST FAILED ===")
+        print(f"Error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        print("=== END ERROR ===")
+        return None
 
 def send_request_direct(title: str, subtitle: str = "", highlight: bool = False):
     """Direct implementation without using LangChain"""
-    import requests
-    import time
     
     print(f"Starting direct Ollama request at {time.ctime()}")
     
@@ -79,7 +172,7 @@ def send_request_direct(title: str, subtitle: str = "", highlight: bool = False)
         prompt = f"Write a short, engaging social media post about this hockey news article. Title: {title}. Summary: {subtitle}. Keep it under 200 characters."
     
     payload = {
-        "model": MODEL_NAME,
+        "model": OLLAMA_MODEL,
         "prompt": prompt,
         "stream": False,
         "options": {
@@ -123,7 +216,6 @@ def send_request_direct(title: str, subtitle: str = "", highlight: bool = False)
 def list_available_models():
     """List all available models in the local Ollama instance"""
     try:
-        import requests
         response = requests.get("http://localhost:11434/api/tags")
         if response.status_code == 200:
             models = response.json().get("models", [])
@@ -134,37 +226,3 @@ def list_available_models():
             print(f"Failed to get models. Status code: {response.status_code}")
     except Exception as e:
         print(f"Error listing models: {e}")
-
-import time
-
-def main():
-    # Show available models
-    list_available_models()
-    
-    # Test data for the request
-    title = "Hamilton out remainder of regular season for Devils"
-    subtitle = "Defenseman leads New Jersey defensemen in scoring, could return during playoffs"
-    
-    try:
-        print(f"\nSending request to model: {MODEL_NAME}")
-        
-        # Start timing
-        start_time = time.time()
-        
-        # Make the request
-        chat_resp = send_request(title, subtitle)
-        
-        # End timing
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        
-        # Print results
-        print("\nGenerated Summary:")
-        print(chat_resp)
-        print(f"Character count: {len(chat_resp)}")
-        print(f"Time taken: {elapsed_time:.2f} seconds")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-if __name__ == "__main__":
-    main()

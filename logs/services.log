@@ -1,59 +1,175 @@
-[2025-04-03 17:31:28] =========================================
-[2025-04-03 17:31:28] Starting services for Django application
-[2025-04-03 17:31:28] =========================================
-[2025-04-03 17:31:28] No virtual environment found at /home/tmcleary/news-bot/pds-uploader/venv. Using system Python.
-[2025-04-03 17:31:28] Checking system resources...
-[2025-04-03 17:31:28] Memory: 23% used (1913 MB / 8051 MB)
-[2025-04-03 17:31:28] Disk: 51% used
-[2025-04-03 17:31:28] CPU Load: 0.12
-[2025-04-03 17:31:28] Redis is already running.
-[2025-04-03 17:31:28] Django is already running.
-[2025-04-03 17:31:28] Stopping Celery worker...
-[2025-04-03 17:31:31] Starting Celery worker...
-[2025-04-03 17:31:34] Celery worker started successfully.
-[2025-04-03 17:31:34] Stopping Celery Beat...
-[2025-04-03 17:31:36] Starting Celery Beat...
-[2025-04-03 17:31:39] Celery Beat started successfully.
-[2025-04-03 17:31:39] =========================================
-[2025-04-03 17:31:39] Services status:
-[2025-04-03 17:31:39] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
-[2025-04-03 17:31:39] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
-[2025-04-03 17:31:39] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
-[2025-04-03 17:31:39] To stop all services: pkill -f 'celery|redis-server|python.*manage.py'
-[2025-04-03 17:31:39] =========================================
-[2025-04-03 17:31:39] Running processes:
-[2025-04-03 17:31:39] 675 /usr/bin/redis-server 127.0.0.1:6379
-[2025-04-03 17:31:39] 10860 python manage.py runserver
-[2025-04-03 17:31:39] 67457 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver
-[2025-04-03 17:31:39] 67878 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
-[2025-04-03 17:31:39] 67920 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
-[2025-04-03 17:31:39] 67924 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
-[2025-04-03 17:31:56] =========================================
-[2025-04-03 17:31:56] Starting services for Django application
-[2025-04-03 17:31:56] =========================================
-[2025-04-03 17:31:56] Checking system resources...
-[2025-04-03 17:31:56] Memory: 37% used (2995 MB / 8051 MB)
-[2025-04-03 17:31:56] Disk: 51% used
-[2025-04-03 17:31:56] CPU Load: 0.74
-[2025-04-03 17:31:56] Redis is already running.
-[2025-04-03 17:31:56] Django is already running.
-[2025-04-03 17:31:56] Stopping Celery worker...
-[2025-04-03 17:31:59] Starting Celery worker...
-[2025-04-03 17:32:02] Celery worker started successfully.
-[2025-04-03 17:32:02] Stopping Celery Beat...
-[2025-04-03 17:32:04] Starting Celery Beat...
-[2025-04-03 17:32:07] Celery Beat started successfully.
-[2025-04-03 17:32:07] =========================================
-[2025-04-03 17:32:07] Services status:
-[2025-04-03 17:32:07] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
-[2025-04-03 17:32:07] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
-[2025-04-03 17:32:07] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
-[2025-04-03 17:32:07] To stop all services: pkill -f 'celery|redis-server|python.*manage.py'
-[2025-04-03 17:32:07] =========================================
-[2025-04-03 17:32:07] Running processes:
-[2025-04-03 17:32:07] 675 /usr/bin/redis-server 127.0.0.1:6379
-[2025-04-03 17:32:07] 10860 python manage.py runserver
-[2025-04-03 17:32:07] 67457 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver
-[2025-04-03 17:32:07] 68168 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
-[2025-04-03 17:32:07] 68205 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --loglevel=info
-[2025-04-03 17:32:07] 68213 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
+[2025-04-04 17:58:48] =========================================
+[2025-04-04 17:58:48] Restarting Django and Celery services
+[2025-04-04 17:58:48] =========================================
+[2025-04-04 17:58:48] Checking system resources...
+[2025-04-04 17:58:48] Memory: 16% used (1338 MB / 8047 MB)
+[2025-04-04 17:58:48] Disk: 51% used
+[2025-04-04 17:58:48] CPU Load: 0.00
+[2025-04-04 17:58:48] Redis is running properly.
+[2025-04-04 17:58:48] Stopping all Django processes...
+[2025-04-04 17:58:48] Found process using port 8000, PID: 79930. Killing...
+[2025-04-04 17:58:50] Port 8000 successfully freed
+[2025-04-04 17:58:50] All Django server processes stopped successfully.
+[2025-04-04 17:58:50] Starting Django server...
+[2025-04-04 17:58:56] Django server started with PID: 80668
+[2025-04-04 17:58:56] Confirmed Django server has port 8000
+[2025-04-04 17:58:56] Django server is responding to requests.
+[2025-04-04 17:58:56] Stopping ALL Celery worker processes...
+[2025-04-04 17:58:56] Current Celery worker processes:
+[2025-04-04 17:59:01] Starting new Celery worker (single process)...
+[2025-04-04 17:59:06] Celery worker started successfully with PID: 80763
+[2025-04-04 17:59:06] Verifying worker count...
+[2025-04-04 17:59:06] Total worker processes: 2
+[2025-04-04 17:59:06] Stopping Celery Beat processes...
+[2025-04-04 17:59:06] Current Celery beat processes:
+[2025-04-04 17:59:10] Starting Celery Beat...
+[2025-04-04 17:59:13] Celery Beat started successfully with PID: 80858
+[2025-04-04 17:59:13] =========================================
+[2025-04-04 17:59:13] Services restarted, checking running processes:
+[2025-04-04 17:59:13] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-04 17:59:13] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-04 17:59:13] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-04 17:59:13] =========================================
+[2025-04-04 17:59:13] redis        695  0.0  0.1  67312 12112 ?        Ssl  00:09   1:00 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-04 17:59:13] tmcleary   80668  1.7  0.7  76496 57856 pts/6    S+   17:58   0:00 python manage.py runserver 0.0.0.0:8000
+[2025-04-04 17:59:13] tmcleary   80670  3.5  0.7 227504 63552 pts/6    Sl+  17:58   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver 0.0.0.0:8000
+[2025-04-04 17:59:13] tmcleary   80763 32.2  3.0 272256 248000 pts/6   S+   17:59   0:03 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-04 17:59:13] tmcleary   80795  0.5  2.8 275360 232880 pts/6   S+   17:59   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-04 17:59:13] tmcleary   80858 99.0  2.5 236224 211200 pts/6   R+   17:59   0:03 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celerybeat.pid --max-interval=300
+[2025-04-04 17:59:13] Memory usage after restart:
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       1.3Gi       4.9Gi       8.0Mi       1.8Gi       6.6Gi
+Swap:          511Mi       386Mi       125Mi
+[2025-04-06 18:53:28] =========================================
+[2025-04-06 18:53:28] Restarting Django and Celery services
+[2025-04-06 18:53:28] =========================================
+[2025-04-06 18:53:28] Checking system resources...
+[2025-04-06 18:53:28] Memory: 14% used (1175 MB / 8051 MB)
+[2025-04-06 18:53:28] Disk: 51% used
+[2025-04-06 18:53:28] CPU Load: 0.51
+[2025-04-06 18:53:28] Redis is running properly.
+[2025-04-06 18:53:28] Stopping all Django processes...
+[2025-04-06 18:53:28] No process found using port 8000
+[2025-04-06 18:53:28] All Django server processes stopped successfully.
+[2025-04-06 18:53:28] Starting Django server...
+[2025-04-06 18:53:35] Django server started with PID: 7668
+[2025-04-06 18:53:35] Confirmed Django server has port 8000
+[2025-04-06 18:53:35] Django server is responding to requests.
+[2025-04-06 18:53:35] Stopping ALL Celery worker processes...
+[2025-04-06 18:53:35] No Celery worker processes found running.
+[2025-04-06 18:53:37] Starting new Celery worker (single process)...
+[2025-04-06 18:53:42] Celery worker started successfully with PID: 7755
+[2025-04-06 18:53:42] Verifying worker count...
+[2025-04-06 18:53:42] Total worker processes: 1
+[2025-04-06 18:53:42] Stopping Celery Beat processes...
+[2025-04-06 18:53:42] No Celery Beat processes found running.
+[2025-04-06 18:53:44] Starting Celery Beat...
+[2025-04-06 18:53:47] Celery Beat started successfully with PID: 7845
+[2025-04-06 18:53:47] =========================================
+[2025-04-06 18:53:47] Services restarted, checking running processes:
+[2025-04-06 18:53:47] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-06 18:53:47] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-06 18:53:47] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-06 18:53:47] =========================================
+[2025-04-06 18:53:47] redis        668  0.0  0.1  67312 12016 ?        Ssl  17:21   0:02 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-06 18:53:47] tmcleary    7668  2.3  0.7  76496 57760 pts/7    S+   18:53   0:00 python manage.py runserver 0.0.0.0:8000
+[2025-04-06 18:53:47] tmcleary    7676  4.8  0.7 227568 64064 pts/7    Sl+  18:53   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver 0.0.0.0:8000
+[2025-04-06 18:53:47] tmcleary    7755 43.7  3.1 283152 258208 pts/7   S+   18:53   0:04 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-06 18:53:47] tmcleary    7845 87.6  1.9 179264 157152 pts/7   R+   18:53   0:02 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celerybeat.pid --max-interval=300
+[2025-04-06 18:53:47] tmcleary    7854 37.5  2.9 284496 241680 pts/7   R+   18:53   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-06 18:53:47] redis       7856  0.0  0.0      0     0 ?        Z    18:53   0:00 [redis-server] <defunct>
+[2025-04-06 18:53:47] Memory usage after restart:
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       1.5Gi       5.4Gi        19Mi       1.1Gi       6.3Gi
+Swap:          511Mi          0B       511Mi
+[2025-04-08 20:41:11] =========================================
+[2025-04-08 20:41:11] Restarting Django and Celery services
+[2025-04-08 20:41:11] =========================================
+[2025-04-08 20:41:11] Checking system resources...
+[2025-04-08 20:41:11] Memory: 19% used (1595 MB / 8051 MB)
+[2025-04-08 20:41:11] Disk: 51% used
+[2025-04-08 20:41:11] CPU Load: 0.54
+[2025-04-08 20:41:11] Redis is running properly.
+[2025-04-08 20:41:11] Stopping all Django processes...
+[2025-04-08 20:41:11] Found process using port 8000, PID: 7676. Killing...
+[2025-04-08 20:41:13] Port 8000 successfully freed
+[2025-04-08 20:41:13] Killing Django server processes with pkill...
+[2025-04-08 20:41:15] All Django server processes stopped successfully.
+[2025-04-08 20:41:15] Starting Django server...
+[2025-04-08 20:41:20] Django server started with PID: 192520
+[2025-04-08 20:41:20] Confirmed Django server has port 8000
+[2025-04-08 20:41:20] Django server is responding to requests.
+[2025-04-08 20:41:20] Stopping ALL Celery worker processes...
+[2025-04-08 20:41:20] Current Celery worker processes:
+[2025-04-08 20:41:24] Some Celery workers still running. Force killing...
+[2025-04-08 20:41:28] Starting new Celery worker (single process)...
+[2025-04-08 20:41:33] Celery worker started successfully with PID: 192627
+[2025-04-08 20:41:33] Verifying worker count...
+[2025-04-08 20:41:33] Total worker processes: 1
+[2025-04-08 20:41:33] Stopping Celery Beat processes...
+[2025-04-08 20:41:33] Current Celery beat processes:
+[2025-04-08 20:41:35] Celery Beat still running. Force killing...
+[2025-04-08 20:41:39] Starting Celery Beat...
+[2025-04-08 20:41:42] Celery Beat started successfully with PID: 192768
+[2025-04-08 20:41:42] =========================================
+[2025-04-08 20:41:42] Services restarted, checking running processes:
+[2025-04-08 20:41:42] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-08 20:41:42] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-08 20:41:42] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-08 20:41:42] =========================================
+[2025-04-08 20:41:42] redis        668  0.0  0.1  67312 11504 ?        Ssl  Apr06   2:27 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-08 20:41:42] tmcleary  192520  1.5  0.7  76624 57840 pts/13   S+   20:41   0:00 python manage.py runserver 0.0.0.0:8000
+[2025-04-08 20:41:42] tmcleary  192528  3.1  0.7 227456 64048 pts/13   Sl+  20:41   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver 0.0.0.0:8000
+[2025-04-08 20:41:42] tmcleary  192627 29.0  2.9 273216 247312 pts/13  S+   20:41   0:04 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-08 20:41:42] tmcleary  192697  0.4  2.8 275344 232464 pts/13  S+   20:41   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-08 20:41:42] tmcleary  192768 97.0  2.5 238848 213728 pts/13  S+   20:41   0:02 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celerybeat.pid --max-interval=300
+[2025-04-08 20:41:42] Memory usage after restart:
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       1.7Gi       3.6Gi       6.4Mi       2.6Gi       6.1Gi
+Swap:          511Mi        89Mi       422Mi
+[2025-04-11 00:25:15] =========================================
+[2025-04-11 00:25:15] Restarting Django and Celery services
+[2025-04-11 00:25:15] =========================================
+[2025-04-11 00:25:15] Checking system resources...
+[2025-04-11 00:25:15] Memory: 16% used (1295 MB / 8051 MB)
+[2025-04-11 00:25:15] Disk: 52% used
+[2025-04-11 00:25:15] CPU Load: 0.63
+[2025-04-11 00:25:15] Redis is running properly.
+[2025-04-11 00:25:15] Stopping all Django processes...
+[2025-04-11 00:25:15] Found process using port 8000, PID: 192528. Killing...
+[2025-04-11 00:25:17] Port 8000 successfully freed
+[2025-04-11 00:25:17] Killing Django server processes with pkill...
+[2025-04-11 00:25:19] Some Django processes still running. Force killing...
+[2025-04-11 00:25:20] All Django server processes stopped successfully.
+[2025-04-11 00:25:20] Starting Django server...
+[2025-04-11 00:25:27] Django server started with PID: 376066
+[2025-04-11 00:25:27] Confirmed Django server has port 8000
+[2025-04-11 00:25:27] Django server is responding to requests.
+[2025-04-11 00:25:27] Stopping ALL Celery worker processes...
+[2025-04-11 00:25:27] Current Celery worker processes:
+[2025-04-11 00:25:30] Some Celery workers still running. Force killing...
+[2025-04-11 00:25:34] Starting new Celery worker (single process)...
+[2025-04-11 00:25:39] Celery worker started successfully with PID: 376200
+[2025-04-11 00:25:39] Verifying worker count...
+[2025-04-11 00:25:39] Total worker processes: 1
+[2025-04-11 00:25:39] Stopping Celery Beat processes...
+[2025-04-11 00:25:39] Current Celery beat processes:
+[2025-04-11 00:25:41] Celery Beat still running. Force killing...
+[2025-04-11 00:25:45] Starting Celery Beat...
+[2025-04-11 00:25:49] Celery Beat started successfully with PID: 376317
+[2025-04-11 00:25:49] =========================================
+[2025-04-11 00:25:49] Services restarted, checking running processes:
+[2025-04-11 00:25:49] Django logs: /home/tmcleary/news-bot/pds-uploader/logs/django.log
+[2025-04-11 00:25:49] Celery worker logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_worker.log
+[2025-04-11 00:25:49] Celery beat logs: /home/tmcleary/news-bot/pds-uploader/logs/celery_beat.log
+[2025-04-11 00:25:49] =========================================
+[2025-04-11 00:25:49] redis        668  0.0  0.1  67312 11504 ?        Ssl  Apr06   5:01 /usr/bin/redis-server 127.0.0.1:6379
+[2025-04-11 00:25:49] tmcleary  376066  1.5  0.7  76624 57776 pts/7    S+   00:25   0:00 python manage.py runserver 0.0.0.0:8000
+[2025-04-11 00:25:49] tmcleary  376068  3.0  0.7 227504 64544 pts/7    Sl+  00:25   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python manage.py runserver 0.0.0.0:8000
+[2025-04-11 00:25:49] tmcleary  376200 29.7  3.0 272672 247872 pts/7   S+   00:25   0:04 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-11 00:25:49] tmcleary  376276  0.5  2.8 274816 231536 pts/7   S+   00:25   0:00 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery worker --concurrency=1 --max-tasks-per-child=100 --loglevel=info --without-gossip --without-mingle --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celery.pid
+[2025-04-11 00:25:49] tmcleary  376317 98.6  2.5 235440 210128 pts/7   R+   00:25   0:03 /home/tmcleary/news-bot/pds-uploader/.venv/bin/python /home/tmcleary/news-bot/pds-uploader/.venv/bin/celery -A sports_news.celery beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=/home/tmcleary/news-bot/pds-uploader/sports_news/celerybeat.pid --max-interval=300
+[2025-04-11 00:25:49] Memory usage after restart:
+               total        used        free      shared  buff/cache   available
+Mem:           7.9Gi       1.5Gi       3.9Gi       6.1Mi       2.6Gi       6.4Gi
+Swap:          511Mi       113Mi       398Mi

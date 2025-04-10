@@ -1,10 +1,10 @@
  
  -------------- celery@pds.thomasmcleary.com v5.5.0 (immunity)
 --- ***** ----- 
--- ******* ---- Linux-6.12.20+rpt-rpi-2712-aarch64-with-glibc2.36 2025-04-03 16:32:04
+-- ******* ---- Linux-6.12.20+rpt-rpi-2712-aarch64-with-glibc2.36 2025-04-10 23:25:41
 - *** --- * --- 
 - ** ---------- [config]
-- ** ---------- .> app:         sports_news:0x7fffa9956990
+- ** ---------- .> app:         sports_news:0x7ffee46f0390
 - ** ---------- .> transport:   redis://localhost:6379/0
 - ** ---------- .> results:     disabled://
 - *** --- * --- .> concurrency: 1 (prefork)
@@ -19,7 +19,5 @@
   . highlights.tasks.scrape_youtube_videos
   . news.tasks.scrape_nhl_news
 
-[2025-04-03 16:32:04,341: INFO/MainProcess] Connected to redis://localhost:6379/0
-[2025-04-03 16:32:04,344: INFO/MainProcess] mingle: searching for neighbors
-[2025-04-03 16:32:05,354: INFO/MainProcess] mingle: all alone
-[2025-04-03 16:32:05,365: INFO/MainProcess] celery@pds.thomasmcleary.com ready.
+[2025-04-10 23:25:42,027: INFO/MainProcess] Connected to redis://localhost:6379/0
+[2025-04-10 23:25:42,050: INFO/MainProcess] celery@pds.thomasmcleary.com ready.
