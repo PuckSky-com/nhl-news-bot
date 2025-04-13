@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from highlights.utils.video_scraper import VideoScraperService
+from highlights.video_scraper import VideoScraperService
 
 class Command(BaseCommand):
     help = 'Scrapes YouTube videos from a specified channel and adds them to the database'

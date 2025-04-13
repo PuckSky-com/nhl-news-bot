@@ -1,6 +1,6 @@
 # sports_news/news/tasks.py
 from celery import shared_task
-from news.utils.news_scraper import NewsScraperService
+from news.news_scraper import NewsScraperService
 import logging
 
 logger = logging.getLogger(__name__)

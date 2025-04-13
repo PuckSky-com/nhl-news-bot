@@ -4,7 +4,7 @@
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DJANGO_APP_DIR="${BASE_DIR}/sports_news"
 LOG_DIR="${BASE_DIR}/logs"
-VENV_DIR="${BASE_DIR}/.venv"  # Assuming virtualenv is used
+VENV_DIR="${BASE_DIR}/.venv"
 CELERY_WORKERS=1  # Hardcoded to 1 to avoid unnecessary memory usage
 
 # Create log directory if it doesn't exist

@@ -1,6 +1,6 @@
 # highlights/tasks.py
 from celery import shared_task
-from highlights.utils.video_scraper import VideoScraperService
+from highlights.video_scraper import VideoScraperService
 import logging
 
 logger = logging.getLogger(__name__)

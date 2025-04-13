@@ -1,14 +1,20 @@
 from celery import shared_task
 from app.uploader import ContentUploader
+from dotenv import load_dotenv
 import logging
+import os
+
+load_dotenv()
+
+pds_host = os.getenv('PDS_HOST')
 
 logger = logging.getLogger(__name__)
 
-@shared_task(bind=True, soft_time_limit=600, time_limit=1800)
+@shared_task(bind=True, soft_time_limit=600, time_limit=18000)
 def upload_to_bluesky(self):
     """Celery task to upload content to Bluesky"""
     task_logger = TaskLogger(self.request.id)
-    uploader = ContentUploader(logger=task_logger)
+    uploader = ContentUploader(pds_url=pds_host, logger=task_logger)
     return uploader.upload_all()
 
 class TaskLogger:

@@ -1,7 +1,7 @@
 # sports_news/news/management/commands/scrape_nhl.py
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from sports_news.news.utils.news_scraper import NewsScraperService
+from news.news_scraper import NewsScraperService
 
 class Command(BaseCommand):
     help = 'Scrapes NHL news articles and adds them to the database'

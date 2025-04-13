@@ -92,12 +92,14 @@ def send_api_request(title: str, subtitle: str, highlight: bool = False):
 
     requirements = (
         " - MUST BE NO MORE THAN 250 CHARACTERS TOTAL"
+        " - REMEMBER we are in the year 2025 and there are 32 NHL teams"
         " - DO NOT try to guess a player's first name if it is not included"
         " - DO NOT substitute or invent players, teams, or facts"
         " - DO NOT include puzzles, questions, or unrelated content"
         " - DO NOT include any instructions or placeholders"
         " - DO NOT make up information not present in the title or description"
-        " - ONLY output the final social media post text with no prefix or explanation" 
+        " - ONLY output the final social media post text with no prefix or explanation"
+        " - DO NOT include any placeholders or quotations around the outputted text"
     )
 
     client = OpenAI(

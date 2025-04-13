@@ -1,4 +1,4 @@
-from app.utils.bluesky_post import upload_content, is_youtube_url
+from app.utils.bluesky_client import BlueSkyClient
 from app.utils import llm as llm
 from django.db import transaction
 from news.models import Article
@@ -11,7 +11,7 @@ class ContentUploader:
     This can be used by both management commands and Celery tasks.
     """
     
-    def __init__(self, logger=None):
+    def __init__(self, pds_url, username=None, password=None, session_string=None, logger=None):
         """
         Initialize the uploader.
         
@@ -20,6 +20,12 @@ class ContentUploader:
                    If None, print statements will be used.
         """
         self.logger = logger
+        self.bsky_client = BlueSkyClient(
+            pds_url=pds_url,
+            username=username,
+            password=password,
+            session_string=session_string
+        )
     
     def log_info(self, message):
         """Log an informational message."""
@@ -90,7 +96,7 @@ class ContentUploader:
             self.log_info(f"Generated text: {text[:100]}...")
             
             # Continue with upload
-            upload_content(
+            self.bsky_client.upload_content(
                 text=text if text else article.title,
                 title=article.title,
                 link=article.link,
@@ -107,12 +113,12 @@ class ContentUploader:
         """Uploads a video to Bluesky"""
         try:
             # Check if the video URL is a YouTube URL and extract the ID
-            video_id = is_youtube_url(video.embed_url)
+            video_id = self.bsky_client.is_youtube_url(video.embed_url)
 
             # Use Llama to generate text for the video, passing description if available
             text = llm.send_request(video.title, video.description if hasattr(video, 'description') else "", highlight=True)
 
-            upload_content(
+            self.bsky_client.upload_content(
                 text=text if text else video.description,
                 title=video.title,
                 link=f"https://www.youtube.com/watch?v={video_id}",
